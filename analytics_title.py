@@ -10,17 +10,18 @@ from datetime import date as ddate
 from datetime import datetime as datetime
 from datetime import timedelta as timedelta
 import pymysql
-import re,sys
+import re
+import sys
 from collections import Counter
 from janome.tokenizer import Tokenizer
 from tqdm import tqdm
 
 
-#終了処理を行う
+# 終了処理を行う
 def endProcess(starttime):
-    #ターミナルに実行結果を表示
+    # ターミナルに実行結果を表示
     elapsedtime = datetime.now() - starttime
-    strElapsedtime =  "経過時間: " + str(elapsedtime)[:10]
+    strElapsedtime = "経過時間: " + str(elapsedtime)[:10]
     print(strElapsedtime)
 
     cur.close()
@@ -31,18 +32,17 @@ def endProcess(starttime):
 if __name__ == '__main__':
 
     try:
-        #ローカルのMysqlに接続確認
+        # ローカルのMysqlに接続確認
         conn = pymysql.connect(host='127.0.0.1', unix_socket='/tmp/mysql.sock',
-                user='root', passwd=None, db='mysql', charset='utf8mb4')
+                               user='root', passwd=None, db='mysql', charset='utf8mb4')
         cur = conn.cursor()
         cur.execute("USE dailydata")
     except:
         sys.exit()
 
-    starttime = datetime.now() #開始時刻の取得
+    starttime = datetime.now()  # 開始時刻の取得
 
-
-    cur.execute("select title from hatenabookmark limit 1000;")
+    cur.execute("select title from hatenabookmark limit 500;")
 
     titles = cur.fetchall()
     t = Tokenizer()
@@ -54,7 +54,11 @@ if __name__ == '__main__':
             if token.part_of_speech[:2] == "名詞":
                 lists.append(token.surface)
 
-    print(Counter(lists).most_common())
+    for most_common_list in Counter(lists).most_common():
+        if most_common_list[1] <= 5:
+            continue
+        print(most_common_list)
+
     print(len(lists))
     print(len(set(lists)))
     endProcess(starttime)
