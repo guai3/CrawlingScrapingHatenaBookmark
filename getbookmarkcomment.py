@@ -14,7 +14,7 @@ import re,sys
 import json
 
 
-# 該当日のURLのホットエントリーをパースしてMysqlにINSERTする関数
+# 該当日のURLのホットエントリーをパースしてMYSQLにINSERTする
 def getlink(line):
 
     # SQLを実行して結果を受け取る
